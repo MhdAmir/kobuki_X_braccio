@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>brac_msgs</name>
+  <version>0.1.2</version>
+  <description>this package contain custom message used for communicate with other node</description>
+
+  <author email="m.amir.hs19@gmail.com">Erlangga Yudi Pradana EE20</author>
+  <maintainer email="m.amir.hs19@gmail.com">Erlangga Yudi Pradana EE20</maintainer>
+  <license>Proprietary</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+</package>

@@ -1,0 +1,6 @@
+float64 x
+float64 y
+float64 z
+---
+bool success
+uint8 error_code  # 0: No error, 1: Too far, 2: Too close

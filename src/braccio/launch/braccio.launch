@@ -1,0 +1,6 @@
+<launch>
+    <node name="braccio" pkg="braccio" type="braccio" output="screen">
+        <param name="port" value="/dev/ttyUSB0" />
+        <param name="baudrate" value="115200" />
+    </node>
+</launch>
