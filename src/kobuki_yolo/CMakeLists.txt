@@ -33,11 +33,14 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME}
-  src/main.cc
-  # src/inference.cpp
-  # src/object_detection.cpp
-  src/subscribe_frame.cpp
-  # src/object_detection.cpp
+	src/main.cc
+	src/frame_process.cc
+	src/camera/realsense.cc
+	src/object_detection/yolo/inference/inference.cc
+	src/object_detection/yolo/object_detection.cc
+	src/utility/model_config.cc
+	# src/ros/ros_publisher.cc
+	# src/ros/msg.cpp
 )
 
 install(DIRECTORY launch
