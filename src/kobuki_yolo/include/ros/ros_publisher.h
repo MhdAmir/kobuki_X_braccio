@@ -4,8 +4,11 @@
     #include "frame_process.h"
     #include "utility/model_config.h"
     #include "ros/ros.h"
-    #include <msgs/Object.h>
-    #include <msgs/Realsense.h>
+
+    #include "custom_msgs/Object.h"
+    #include "custom_msgs/Realsense.h"
+
+    
 
     class ROSPublish
     {

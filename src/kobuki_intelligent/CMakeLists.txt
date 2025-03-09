@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(braccio)
+project(kobuki_intelligent)
 
 find_package(catkin REQUIRED COMPONENTS 
 geometry_msgs 
@@ -11,22 +11,22 @@ ecl_threads
 ecl_time 
 kobuki_msgs 
 custom_msgs
-serial
 )
 
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES kobuki
    CATKIN_DEPENDS geometry_msgs std_srvs std_msgs roscpp ecl_exceptions ecl_threads ecl_time kobuki_msgs custom_msgs
-   serial
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME}
+	src/intelligent.cpp
+	src/running.cpp
 	src/main.cpp
 )
-target_link_libraries(braccio ${catkin_LIBRARIES} serial)
+target_link_libraries(kobuki_intelligent ${catkin_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

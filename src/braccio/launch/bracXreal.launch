@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find kobuki_yolo)/launch/yolo.launch"/>
+  <include file="$(find braccio)/launch/braccio.launch"/>
+</launch>

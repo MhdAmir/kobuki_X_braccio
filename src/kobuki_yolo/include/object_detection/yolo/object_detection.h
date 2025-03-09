@@ -20,6 +20,7 @@ class DetectedObject {
   cv::Rect rectangle_;
   float distance_;
   uint8_t class_id_;
+  rs2_vector xyz_values_;
   float confidence_;
 };
 

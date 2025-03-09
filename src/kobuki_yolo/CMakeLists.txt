@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge          
   image_transport    
   message_filters    
+  custom_msgs
+
 )
 
 find_package(OpenCV 4.8.1 REQUIRED)
@@ -21,7 +23,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES kobuki
   CATKIN_DEPENDS geometry_msgs std_srvs std_msgs roscpp ecl_exceptions ecl_threads ecl_time kobuki_msgs
-                 cv_bridge image_transport message_filters  
+                 cv_bridge image_transport message_filters custom_msgs
 )
 
 include_directories(
@@ -39,7 +41,7 @@ add_executable(${PROJECT_NAME}
 	src/object_detection/yolo/inference/inference.cc
 	src/object_detection/yolo/object_detection.cc
 	src/utility/model_config.cc
-	# src/ros/ros_publisher.cc
+	src/ros/ros_publisher.cc
 	# src/ros/msg.cpp
 )
 

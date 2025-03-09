@@ -46,4 +46,7 @@
   <exec_depend>yocs_cmd_vel_mux</exec_depend>
   <exec_depend>yocs_velocity_smoother</exec_depend>
 
+  <depend>custom_msgs</depend>
+
+
 </package>

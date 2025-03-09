@@ -1,4 +1,0 @@
-uint32 id
-uint32 value
----
-bool result

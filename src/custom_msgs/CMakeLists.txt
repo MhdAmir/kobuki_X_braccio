@@ -1,19 +1,23 @@
 cmake_minimum_required(VERSION 3.5.0)
 add_compile_options(-std=c++11)
-project(brac_msgs)
+project(custom_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   message_generation
 )
-
-
-add_service_files(
+add_message_files(
   FILES
-    getTarget.srv
-    setInit.srv
+  Object.msg
+  Realsense.msg
 )
+
+# add_service_files(
+#   FILES
+#     getTarget.srv
+#     setInit.srv
+# )
 
 generate_messages(
   DEPENDENCIES

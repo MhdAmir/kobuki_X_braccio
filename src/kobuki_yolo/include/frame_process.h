@@ -34,6 +34,7 @@ private:
 
 
     void EstimateDepth(std::vector<DetectedObject> &detected_object);
+    void EstimateRealXYZ(std::vector<DetectedObject> &detected_object);
 
     cv::Mat color_frame_;
     cv::Mat depth_frame_;

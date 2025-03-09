@@ -1,0 +1,15 @@
+<launch>
+    <remap from="keyop/motor_power" to="mobile_base/commands/motor_power"/>
+    <remap from="keyop/cmd_vel" to="mobile_base/commands/velocity"/>
+
+    <include file="$(find kobuki_node)/launch/minimal.launch" />
+    <!-- <include file="$(find kobuki_hand)/launch/hand_track.launch" /> -->
+    <include file="$(find kobuki_yolo)/launch/yolo.launch" />
+
+    <node pkg="kobuki_intelligent" type="kobuki_intelligent" name="kobuki_intelligent" output="screen"/>
+    
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+        <param name="port" value="/dev/ttyACM0"/> <!-- Sesuaikan port Arduino -->
+        <param name="baud" value="57600"/> <!-- Sesuaikan baud rate -->
+    </node>
+</launch>

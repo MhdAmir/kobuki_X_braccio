@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>braccio</name>
+  <name>kobuki_intelligent</name>
   <version>0.0.0</version>
-  <description>The hand-gesture package</description>
+  <description>The Intelligent Kobuki package</description>
 
-  <maintainer email="m.amir.hs19@gmail.com">Muhammad Amir Abdurrozaq</maintainer>
+  <maintainer email="m.amir.hs19@gmail.com">root</maintainer>
 
-  <license>BSD</license>
+  <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -15,25 +15,32 @@
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>std_srvs</build_depend>
+
+
   <build_depend>ecl_exceptions</build_depend>
   <build_depend>ecl_threads</build_depend>
   <build_depend>ecl_time</build_depend>
+
   <build_depend>kobuki_msgs</build_depend>
-  <build_depend>serial</build_depend> <!-- Ditambahkan -->
+
+  <build_depend>custom_msgs</build_depend>
+  <exec_depend>custom_msgs</exec_depend>
+
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
+
   <exec_depend>ecl_exceptions</exec_depend>
   <exec_depend>ecl_threads</exec_depend>
   <exec_depend>ecl_time</exec_depend>
-  <exec_depend>kobuki_msgs</exec_depend>
-  <exec_depend>serial</exec_depend> <!-- Ditambahkan -->
 
-  <depend>custom_msgs</depend>
-  <depend>yocs_cmd_vel_mux</depend>
-  <depend>yocs_velocity_smoother</depend>
+  <exec_depend>kobuki_msgs</exec_depend>
+
+
+  <exec_depend>yocs_cmd_vel_mux</exec_depend>
+  <exec_depend>yocs_velocity_smoother</exec_depend>
 
 </package>

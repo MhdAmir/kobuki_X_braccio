@@ -2,7 +2,7 @@
 
 ROSPublish::ROSPublish(FrameProcessor &frame_processor, ModelConfig &model_config, ros::NodeHandle &nh) : frame_processor_(frame_processor), model_config_(model_config)
 {
-    realsense_pub_ = nh.advertise<msgs::Realsense>("/realsense", 0);
+    realsense_pub_ = nh.advertise<custom_msgs::Realsense>("/realsense", 0);
 }
 
 void ROSPublish::PublishMessage()
@@ -10,7 +10,7 @@ void ROSPublish::PublishMessage()
     std::vector<std::string> name_object = model_config_.GetObjectName();
     std::vector<DetectedObject> detected_object = frame_processor_.PubDetectedObject();
 
-    msgs::Realsense realsense_message;
+    custom_msgs::Realsense realsense_message;
     std::map<std::string, bool> object_detected;
     for (const auto &name : name_object)
     {
@@ -19,10 +19,13 @@ void ROSPublish::PublishMessage()
 
     for (const auto &detection : detected_object)
     {
-        msgs::Object object;
+        custom_msgs::Object object;
         object.x = detection.centroid_.x;
         object.y = detection.centroid_.y;
         object.distance = detection.distance_;
+        object.real_x = detection.xyz_values_.x;
+        object.real_y = detection.xyz_values_.y;
+        object.real_z = detection.xyz_values_.z;
         object.name = name_object[detection.class_id_];
         realsense_message.yolo.push_back(object);
 
@@ -33,7 +36,7 @@ void ROSPublish::PublishMessage()
     {
         if (!object_detected[name])
         {
-            msgs::Object object;
+            custom_msgs::Object object;
             object.x = 0;
             object.y = 0;
             object.distance = 0;

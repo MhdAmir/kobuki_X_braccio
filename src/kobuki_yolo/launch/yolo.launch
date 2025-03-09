@@ -1,28 +1,18 @@
 <launch>
-<include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <!-- Enable depth alignment to color -->
-    <arg name="align_depth" value="true"/>
-    
-    <!-- Set highest resolution for color camera -->
-    <arg name="color_width" value="1920"/>
-    <arg name="color_height" value="1080"/>
-    <arg name="color_fps" value="30"/>
-    
-    <!-- Set highest resolution for depth camera (D435 max is 1280x720) -->
-    <arg name="depth_width" value="1280"/>
-    <arg name="depth_height" value="720"/>
-    <arg name="depth_fps" value="30"/>
-    
-    <!-- Enable high accuracy preset (improves depth quality) -->
-    <!-- <arg name="json_file_path" value="$(find kobuki_yolo)/config/high_accuracy.json"/> -->
-    
-    <!-- Enable temporal filtering for depth -->
-    <!-- <arg name="filters" value="temporal,spatial"/> -->
-    
-    <!-- Other useful parameters -->
-    <!-- <arg name="enable_pointcloud" value="true"/> -->
-    <!-- <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/> -->
-    <!-- <arg name="allow_no_texture_points" value="false"/> -->
-  </include>
+  <!-- First RealSense Camera -->
+  <group ns="camera1">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="serial_no" value="841612070146"/>  <!-- Replace with your first camera serial -->
+      <arg name="align_depth" value="true"/>
+      <arg name="color_width" value="424"/>
+      <arg name="color_height" value="240"/>
+      <arg name="color_fps" value="60"/>
+      <arg name="depth_width" value="480"/>
+      <arg name="depth_height" value="270"/>
+      <arg name="depth_fps" value="60"/>
+    </include>
+  </group>
+
+  <!-- Your main node -->
   <node pkg="kobuki_yolo" type="kobuki_yolo" name="kobuki_yolo" output="screen"/>
 </launch>

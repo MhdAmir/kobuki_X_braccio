@@ -1,6 +1,7 @@
 #include "frame_process.h"
 
 FrameProcessor::FrameProcessor(RealSenseCamera& camera, YOLO& yolo, ModelConfig& model_config) : camera_(camera), yolo_(yolo), model_config_(model_config) {    
+    use_gui_ = true;
     running_ = true;
     config_object_name_ = model_config_.GetObjectName();
 }
@@ -38,6 +39,7 @@ void FrameProcessor::DrawFrame() {
 
         detected_object_ = yolo_.GetDetectedObject();
         EstimateDepth(detected_object_);
+        EstimateRealXYZ(detected_object_);
 
         if (color_frame_.empty() || depth_frame_.empty()) {
             continue;
@@ -45,7 +47,7 @@ void FrameProcessor::DrawFrame() {
         if(use_gui_){
             for(auto& object : detected_object_){
                 cv::rectangle(color_frame_, object.rectangle_, cv::Scalar(0, 255, 0), 2);
-                cv::putText(color_frame_, std::to_string(object.class_id_), object.centroid_, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
+                cv::putText(color_frame_, std::to_string(object.confidence_), object.centroid_, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
 
             }
             cv::imshow("Color Frame", color_frame_);
@@ -57,7 +59,13 @@ void FrameProcessor::DrawFrame() {
 
 void FrameProcessor::EstimateDepth(std::vector<DetectedObject> &detected_object) {
     for(auto& object : detected_object){
-        object.distance_ = camera_.GetDepthValue(object.centroid_);
+        object.distance_ = camera_.GetDepthValue(object.centroid_, 6);
+    }
+}
+
+void FrameProcessor::EstimateRealXYZ(std::vector<DetectedObject> &detected_object){
+    for(auto& object : detected_object){
+        object.xyz_values_ = camera_.GetXYZDepthValues(object.centroid_, 6);
     }
 }
 
