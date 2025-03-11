@@ -28,6 +28,28 @@ RealSenseCamera::RealSenseCamera()
     }
 }
 
+RealSenseCamera::RealSenseCamera(std::string name){
+    try
+    {
+        // Initialize ROS node handle
+        nh_ = std::make_shared<ros::NodeHandle>();
+        it_ = std::make_shared<image_transport::ImageTransport>(*nh_);
+        
+        // Subscribe to the topics published by rs_camera.launch
+        color_sub_ = it_->subscribe("/"+name+"/camera/color/image_raw", 1, &RealSenseCamera::colorCallback, this);
+        depth_sub_ = it_->subscribe("/"+name+"/camera/aligned_depth_to_color/image_raw", 1, &RealSenseCamera::depthCallback, this);
+        camera_info_sub_ = nh_->subscribe("/"+name+"/camera/aligned_depth_to_color/camera_info", 1, &RealSenseCamera::cameraInfoCallback, this);
+
+        Device_connected_.store(true);
+        std::cout << "RealSense camera node initialized." << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "RealSense initialization error: " << e.what() << '\n';
+        Device_connected_.store(false);
+    }
+}
+
 RealSenseCamera::RealSenseCamera(int width, int height, int fps)
 {
     try

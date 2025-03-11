@@ -47,7 +47,7 @@ void FrameProcessor::DrawFrame() {
         if(use_gui_){
             for(auto& object : detected_object_){
                 cv::rectangle(color_frame_, object.rectangle_, cv::Scalar(0, 255, 0), 2);
-                cv::putText(color_frame_, std::to_string(object.confidence_), object.centroid_, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
+                cv::putText(color_frame_, std::to_string(object.distance_), object.centroid_, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
 
             }
             cv::imshow("Color Frame", color_frame_);

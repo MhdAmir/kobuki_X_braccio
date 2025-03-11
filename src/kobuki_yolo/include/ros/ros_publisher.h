@@ -13,7 +13,7 @@
     class ROSPublish
     {
     public:
-        ROSPublish(FrameProcessor &frame_processor, ModelConfig &model_config, ros::NodeHandle &nh);
+        ROSPublish(FrameProcessor &frame_processor, ModelConfig &model_config, std::string camera_name, ros::NodeHandle &nh);
 
         void PublishMessage();
 

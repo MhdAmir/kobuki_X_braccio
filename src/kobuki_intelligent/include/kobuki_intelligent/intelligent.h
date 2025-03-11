@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <cmath>
+#include "custom_msgs/Comm.h"
 #include "custom_msgs/Realsense.h"
 #include "custom_msgs/Object.h"
 #include "geometry_msgs/Twist.h"
@@ -24,8 +25,12 @@ class Intelligent {
 private:
     void RealsenseCallback(const custom_msgs::Realsense::ConstPtr& msg);
     void ArmCallback(const std_msgs::Bool::ConstPtr& msg);
-    void ObjectCallback(const custom_msgs::Object::ConstPtr& msg);
+    void ObjectCallback(const custom_msgs::Realsense::ConstPtr& msg);
+    void HumanTrackCallback(const custom_msgs::Realsense::ConstPtr& msg);
+    void CommunicationCallback(const custom_msgs::Comm::ConstPtr& msg);
+    
     void BumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg);
+    void CliffCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg);
     
     ros::NodeHandle node_handle_;
     
@@ -35,6 +40,7 @@ private:
     ros::Subscriber sub_odometry_;
     ros::Subscriber sub_bump_;
     ros::Subscriber sub_arm_;
+    ros::Subscriber sub_cliff;
     
     ros::Publisher pub_communication_;
     ros::Publisher pub_arm_;
@@ -51,11 +57,15 @@ private:
     double target_rl = 0;
 
     
+    void FollowHuman();
     void AutomaticSearchCup();
     void ApplyAcceleration();
     double GetFilteredDistance(double);
     
     void PublishMessage();
+
+    int mode_communication_ = 0; //0: home&disconnect, 1: follow human, 2: manual, 3: take cup, 4: direction by hand
+    int manual_comm_ = 0; // 0: stop, 1: forward, 2: backward, 3: right, 4: left
     
     bool arm_moving_ = false;
     

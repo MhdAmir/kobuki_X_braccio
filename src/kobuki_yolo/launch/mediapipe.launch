@@ -1,0 +1,6 @@
+<launch>
+    <!-- Node untuk menjalankan MediaPipe Pose -->
+    <node pkg="kobuki_yolo" type="main.py" name="kobuki_gesture" output="screen" launch-prefix="bash -c 'sleep 2; $0 $@'">
+        <param name="image_topic" value="/camera2/camera/color/image_raw"/>
+    </node>
+</launch>

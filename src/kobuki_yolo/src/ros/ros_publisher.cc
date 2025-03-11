@@ -1,8 +1,8 @@
 #include "ros/ros_publisher.h"
 
-ROSPublish::ROSPublish(FrameProcessor &frame_processor, ModelConfig &model_config, ros::NodeHandle &nh) : frame_processor_(frame_processor), model_config_(model_config)
+ROSPublish::ROSPublish(FrameProcessor &frame_processor, ModelConfig &model_config, std::string camera_name,ros::NodeHandle &nh) : frame_processor_(frame_processor), model_config_(model_config)
 {
-    realsense_pub_ = nh.advertise<custom_msgs::Realsense>("/realsense", 0);
+    realsense_pub_ = nh.advertise<custom_msgs::Realsense>("/"+camera_name+"_postprocess", 0);
 }
 
 void ROSPublish::PublishMessage()

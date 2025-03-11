@@ -16,6 +16,7 @@ class RealSenseCamera
 {
 public:
     RealSenseCamera();
+    RealSenseCamera(std::string name);
     RealSenseCamera(int width, int height, int fps);
     ~RealSenseCamera();
 

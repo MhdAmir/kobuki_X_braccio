@@ -1,0 +1,24 @@
+<launch>
+  <!-- First RealSense Camera -->
+  <group ns="camera2">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="serial_no" value="934222072624"/>
+      <arg name="align_depth" value="true"/>
+      <arg name="color_width" value="424"/>
+      <arg name="color_height" value="240"/>
+      <arg name="color_fps" value="30"/>
+      <arg name="depth_width" value="480"/>
+      <arg name="depth_height" value="270"/>
+      <arg name="depth_fps" value="30"/>
+      <arg name="enable_infra1" value="false"/>
+      <arg name="enable_infra2" value="false"/>
+    </include>
+  </group>
+
+  <!-- YOLO node -->
+  <node pkg="kobuki_yolo" type="kobuki_yolo" name="kobuki_yolo2" output="screen"
+        launch-prefix="bash -c 'sleep 2; $0 $@'">
+    <param name="model_config" value="/home/eros/parameters/realsense/learning/model_config2.yaml"/>
+    <param name="camera_name" value="camera2"/>
+  </node>
+</launch>

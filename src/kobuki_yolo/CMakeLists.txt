@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
 	src/object_detection/yolo/object_detection.cc
 	src/utility/model_config.cc
 	src/ros/ros_publisher.cc
+	src/ros/ros_subscriber.cc
 	# src/ros/msg.cpp
 )
 

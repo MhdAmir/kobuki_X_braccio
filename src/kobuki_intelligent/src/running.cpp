@@ -2,7 +2,29 @@
 
 void Intelligent::Loop()
 {
-    AutomaticSearchCup();
+    switch (mode_communication_)
+    {
+    case 0:
+        // Init();
+        break;
+    
+    case 1:
+        AutomaticSearchCup();
+        break;
+
+    case 2:
+        FollowHuman();
+        break;
+
+    case 3:
+
+        break;
+    
+    case 4:
+
+        break;
+    }
+    // AutomaticSearchCup();
     ApplyAcceleration();
     PublishMessage();
 }
@@ -18,13 +40,12 @@ void Intelligent::PublishMessage()
 
     if (arm_moving_)
     {
-        // ROS_WARN("Braccio is still moving. Command not sent.");
         return;
     }
 
     motor_msg.state = kobuki_msgs::MotorPower::ON;
 
-    if (pub_kobuki_velocity_.getNumSubscribers() > 0 && pub_arm_.getNumSubscribers() > 0)
+    if (pub_kobuki_velocity_.getNumSubscribers() > 0 /*&& pub_arm_.getNumSubscribers() > 0*/)
     {
         pub_kobuki_velocity_.publish(twist_msg);
         angle_msg.data = angles_;
@@ -34,15 +55,61 @@ void Intelligent::PublishMessage()
     else
     {
         state_ = 0;
-        // ROS_WARN("No subscribers for /mobile_base/commands/velocity");
     }
 
-    // if (pub_kobuki_power_.getNumSubscribers() > 0) {
-    //     pub_kobuki_power_.publish(motor_msg);
-    // } else {
-    //     ROS_WARN("No subscribers for /mobile_base/commands/motor_power");
-    // }
 }
+
+void Intelligent::FollowHuman()
+{
+    const int FRAME_CENTER = 0;
+    const int SMALL_DEVIATION_THRESHOLD = 15;
+    const int LARGE_DEVIATION_THRESHOLD = 100;
+
+    int deviation = object_[kPerson].frame.x - FRAME_CENTER;
+    double rotation_speed;
+
+    double filtered_distance = GetFilteredDistance(object_[kPerson].distance);
+
+    fprintf(stderr, "filter >> %g \n", filtered_distance);
+
+    if(!object_[kPerson].exist){
+        target_fb = 0.0;
+    }else{
+        deviation = object_[kPerson].frame.x;
+        if (abs(deviation) > LARGE_DEVIATION_THRESHOLD)
+        {
+            target_fb = 0.0;
+            rotation_speed = 0.3;
+            target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
+        }
+        else if (abs(deviation) > SMALL_DEVIATION_THRESHOLD)
+        {
+            target_fb = 0.1;
+            rotation_speed = 0.1 + (abs(deviation) - SMALL_DEVIATION_THRESHOLD) * 0.002;
+            target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
+        }
+        else
+        {
+            target_fb = 0.2;
+            rotation_speed = abs(deviation) * 0.003;
+            target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
+        }
+    
+        if (filtered_distance < 1.2)
+        {
+            if (abs(deviation) > SMALL_DEVIATION_THRESHOLD)
+            {
+                rotation_speed = 0.1 + (abs(deviation) - SMALL_DEVIATION_THRESHOLD) * 0.002;
+                target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
+            }
+            target_fb = 0.0;
+            
+        }
+    }
+    
+    
+}
+
 
 void Intelligent::AutomaticSearchCup()
 {
@@ -66,23 +133,23 @@ void Intelligent::AutomaticSearchCup()
 
     }
 
-    fprintf(stderr, "state >> %d\n", state_);
-    fprintf(stderr, "arm move >> %d\n\n", arm_moving_);
-    fprintf(stderr, "frame x >> %d\n\n", object_[kCup].frame.x);
+    // fprintf(stderr, "state >> %d\n", state_);
+    // fprintf(stderr, "arm move >> %d\n\n", arm_moving_);
+    // fprintf(stderr, "frame x >> %d\n\n", object_[kCup].frame.x);
 
     switch (state_)
     {
     case 0:
-        angles_.assign({92, 73, 0, 88, 90, 0});
         if (!object_[kCup].exist)
         {
+            angles_.assign({151, 83, 0, 0, 90, 90});
             target_fb = 0.0;
             target_rl = 0.3;
         }
         else
         {
-           
-            deviation = object_[kCup].frame.x - FRAME_CENTER;
+            angles_.assign({90, 120, 0, 0, 90, 90});
+            deviation = object_[kCup].frame.x;
             if (abs(deviation) > LARGE_DEVIATION_THRESHOLD)
             {
                 target_fb = 0.0;

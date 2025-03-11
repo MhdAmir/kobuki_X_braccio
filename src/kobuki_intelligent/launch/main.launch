@@ -4,7 +4,8 @@
 
     <include file="$(find kobuki_node)/launch/minimal.launch" />
     <!-- <include file="$(find kobuki_hand)/launch/hand_track.launch" /> -->
-    <include file="$(find kobuki_yolo)/launch/yolo.launch" />
+    <include file="$(find kobuki_yolo)/launch/human.launch" />
+    <!-- <include file="$(find kobuki_yolo)/launch/object.launch" /> -->
 
     <node pkg="kobuki_intelligent" type="kobuki_intelligent" name="kobuki_intelligent" output="screen"/>
     

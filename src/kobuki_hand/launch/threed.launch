@@ -1,0 +1,24 @@
+<launch>
+  <group ns="camera2">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="serial_no" value="934222072624"/>  <!-- Replace with your second camera serial -->
+      <arg name="align_depth" value="true"/>
+      <arg name="color_width" value="424"/>
+      <arg name="color_height" value="240"/>
+      <arg name="color_fps" value="60"/>
+      <arg name="depth_width" value="480"/>
+      <arg name="depth_height" value="270"/>
+      <arg name="depth_fps" value="60"/>
+    </include>
+  </group>
+    
+  <node pkg="kobuki_hand" type="threed.py" name="kobuki_hand" output="screen">
+    <!-- <remap from="keyop/motor_power" to="mobile_base/commands/motor_power"/> -->
+    <!-- <remap from="keyop/cmd_vel" to="mobile_base/commands/velocity"/> -->
+    <!-- <param name="linear_vel_step"  value="0.05" type="double"/> -->
+    <!-- <param name="linear_vel_max"   value="1.5"  type="double"/> -->
+    <!-- <param name="angular_vel_step" value="0.33" type="double"/> -->
+    <!-- <param name="angular_vel_max"  value="6.6"  type="double"/> -->
+    <!-- <param name="wait_for_connection_" value="true" type="bool"/> -->
+  </node>
+</launch>

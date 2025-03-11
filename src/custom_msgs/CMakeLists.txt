@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
 )
 add_message_files(
   FILES
+  Intl.msg
+  Comm.msg
   Object.msg
   Realsense.msg
 )

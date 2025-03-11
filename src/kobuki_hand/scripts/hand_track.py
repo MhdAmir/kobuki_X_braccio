@@ -13,8 +13,8 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_c
 mp_drawing = mp.solutions.drawing_utils
 
 rospy.init_node('hand_gesture_control', anonymous=True)
-# velocity_publisher = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=1)
-# motor_power_publisher = rospy.Publisher('/mobile_base/commands/motor_power', MotorPower, queue_size=1)
+velocity_publisher = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=1)
+motor_power_publisher = rospy.Publisher('/mobile_base/commands/motor_power', MotorPower, queue_size=1)
 rate = rospy.Rate(10)
 
 bridge = CvBridge()
@@ -70,8 +70,8 @@ def image_callback(msg):
                 twist_msg.angular.z = min(twist_msg.angular.z, 0.33)
                 motor_msg.state = MotorPower.ON
 
-    # velocity_publisher.publish(twist_msg)
-    # motor_power_publisher.publish(motor_msg)
+    velocity_publisher.publish(twist_msg)
+    motor_power_publisher.publish(motor_msg)
 
     cv2.imshow('Hand Gesture Control', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
