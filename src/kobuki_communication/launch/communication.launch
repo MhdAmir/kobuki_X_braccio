@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="kobuki_communication" type="main.py" name="kobuki_gesture" output="screen" launch-prefix="bash -c 'sleep 2; $0 $@'">
+    </node>
+</launch>

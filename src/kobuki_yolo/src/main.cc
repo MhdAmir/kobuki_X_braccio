@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     frame_processor.Start();
     ROSPublish ros_publish(frame_processor, model_config, camera_name, nh);
 
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(100);
     while (ros::ok())
     {
         loop_rate.sleep();

@@ -7,6 +7,7 @@ Intelligent::Intelligent() {
     sub_arm_ = node_handle_.subscribe("/mobile_base/events/cliff", 1, &Intelligent::CliffCallback, this);
     sub_bump_ = node_handle_.subscribe("/mobile_base/events/bumper", 1, &Intelligent::BumperCallback, this);
     sub_communication_ = node_handle_.subscribe("/communication_hp", 1, &Intelligent::CommunicationCallback, this);
+    sub_odometry_ = node_handle_.subscribe("/pose2d", 1, &Intelligent::OdomCallback, this);
     
     pub_kobuki_velocity_ = node_handle_.advertise<geometry_msgs::Twist>("/keyop/cmd_vel", 1);
     pub_arm_ = node_handle_.advertise<std_msgs::UInt8MultiArray>("/joint_array",1);
@@ -14,6 +15,20 @@ Intelligent::Intelligent() {
     // pub_kobuki_power_ = node_handle_.advertise<kobuki_msgs::MotorPower>("/mobile_base/commands/motor_power", 1);
 }
 
+void Intelligent::OdomCallback(const geometry_msgs::Pose2D::ConstPtr& msg) {
+         // Ambil posisi x dan y
+    double pos_x = msg->x;
+    double pos_y = msg->y;
+
+    yaw_deg_ = msg->theta * (180.0 / M_PI); // Konversi ke derajat
+
+    if (yaw_deg_ > 180) {
+        yaw_deg_ -= 360;
+    } else if (yaw_deg_ < -180) {
+        yaw_deg_ += 360;
+    }
+
+}
 void Intelligent::ArmCallback(const std_msgs::Bool::ConstPtr& msg){
     // ROS_INFO("Arm callback triggered. Value: %s", msg->data ? "true" : "false");
     arm_moving_ = !msg->data;
@@ -21,7 +36,8 @@ void Intelligent::ArmCallback(const std_msgs::Bool::ConstPtr& msg){
 
 void Intelligent::CommunicationCallback(const custom_msgs::Comm::ConstPtr& msg){
     mode_communication_ = msg->mode;
-    manual_comm_ = msg->manualComm;
+    comm_linear_vel_ = msg->linear_velocity;
+    comm_angul_vel_= msg->angular_velocity;
 }
 void Intelligent::BumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg){
 

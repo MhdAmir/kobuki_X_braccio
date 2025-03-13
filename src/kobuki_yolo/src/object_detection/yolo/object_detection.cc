@@ -1,34 +1,64 @@
 #include "object_detection/yolo/object_detection.h"
 
-YOLO::YOLO(ModelConfig &model_config) : model_config_(model_config)
+YOLO::YOLO(ModelConfig &model_config)
+    : model_config_(model_config), running_(false), yolo_enabled_(false)
 {
   inference_ = new Inference(model_config);
 }
 
 YOLO::~YOLO()
 {
-  if (running_)
-    running_ = false;
-
+  Stop();
   delete inference_;
 }
 
 void YOLO::Start(RealSenseCamera &camera)
 {
+  if (running_)
+    return; 
   running_ = true;
-  while (running_)
+  yolo_thread_ = std::thread(&YOLO::Run, this, std::ref(camera));
+}
+
+void YOLO::Stop()
+{
+  if (!running_)
+    return;              
+  running_ = false;      
+  cv_yolo_.notify_all(); 
+  if (yolo_thread_.joinable())
   {
-    if (!camera.Device_connected_.load())
-      continue;
+    yolo_thread_.join(); 
+  }
+}
 
-    color_frame_ = camera.GetColorFrame();
+void YOLO::EnableYOLO(bool enable)
+{
+  {
+    std::lock_guard<std::mutex> lock(mutex_yolo_);
+    yolo_enabled_ = enable;
+  }
+  cv_yolo_.notify_all(); 
+}
 
-    if (color_frame_.empty())
-    {
-      continue;
-    }
+void YOLO::Run(RealSenseCamera &camera) {
+  while (running_) {
+      std::unique_lock<std::mutex> lock(mutex_yolo_);
+      cv_yolo_.wait(lock, [this]() { return yolo_enabled_ || !running_; });
 
-    detected_object_ = Predict(color_frame_);
+      if (!running_) break; // Keluar jika thread diminta berhenti
+
+      if (!yolo_enabled_) continue; // Lewati inferensi jika YOLO dinonaktifkan
+
+      if (!camera.Device_connected_.load())
+          continue;
+
+      cv::Mat color_frame = camera.GetColorFrame();
+      if (color_frame.empty()) {
+          continue;
+      }
+
+      detected_object_ = Predict(color_frame);
   }
 }
 

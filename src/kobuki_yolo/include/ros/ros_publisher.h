@@ -21,6 +21,7 @@
         FrameProcessor &frame_processor_;
         ModelConfig &model_config_;
         ros::Publisher realsense_pub_;
+        std::mutex publish_mutex;
     };
 
     #endif // DETECTOR_ROSPUB_H_

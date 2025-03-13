@@ -1,2 +1,3 @@
 uint16 mode
-uint16 manualComm
+float32 linear_velocity
+float32 angular_velocity

@@ -120,9 +120,9 @@ void RealSenseCamera::Stop()
 
 void RealSenseCamera::colorCallback(const sensor_msgs::ImageConstPtr& msg)
 {
+    std::lock_guard<std::mutex> lock(mutex_color_frame_);
     try
     {
-        std::lock_guard<std::mutex> lock(mutex_color_frame_);
         cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
         color_mat_ = cv_ptr->image;
         last_color_timestamp_ = ros::Time::now();

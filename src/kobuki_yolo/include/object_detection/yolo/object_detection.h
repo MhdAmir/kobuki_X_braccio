@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <mutex>
+#include <condition_variable>
 
 #include <opencv2/core/types.hpp>
 
@@ -30,6 +31,9 @@ class YOLO {
   ~YOLO();
 
   void Start(RealSenseCamera& camera);
+  void Stop();
+
+  void EnableYOLO(bool enable);
 
   std::vector<DetectedObject> GetDetectedObject();
   std::vector<DetectedObject> Predict(const cv::Mat &frame);
@@ -37,9 +41,9 @@ class YOLO {
 
  private:
   ModelConfig model_config_;
+  void Run(RealSenseCamera &camera);
   cv::Point GetCentroid(const cv::Rect &rect);
   cv::Point GetBottomCentroid(const cv::Rect &rect);
-  bool running_ = false;
   Inference *inference_;
   cv::Mat color_frame_;
   cv::Mat depth_frame_;
@@ -47,6 +51,11 @@ class YOLO {
   std::vector<DetectedObject> detected_object_;
 
   std::mutex mutex_object;
+  std::atomic<bool> running_;       
+  std::atomic<bool> yolo_enabled_;  
+  std::thread yolo_thread_;          
+  std::mutex mutex_yolo_;           
+  std::condition_variable cv_yolo_;  
 };
 
 #endif // DETECTOR_OBJECT_DETECTION_H_

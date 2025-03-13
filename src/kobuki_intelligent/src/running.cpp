@@ -13,18 +13,18 @@ void Intelligent::Loop()
         break;
 
     case 2:
-        FollowHuman();
+        ManualComm();
         break;
 
     case 3:
-
+        FollowHuman();
         break;
     
     case 4:
 
         break;
     }
-    // AutomaticSearchCup();
+    // // AutomaticSearchCup();
     ApplyAcceleration();
     PublishMessage();
 }
@@ -59,57 +59,60 @@ void Intelligent::PublishMessage()
 
 }
 
-void Intelligent::FollowHuman()
+void Intelligent::ManualComm()
 {
+    target_fb = comm_linear_vel_;
+    target_rl = comm_angul_vel_;
+
+}
+
+double Intelligent::PIDControl(double error) {
+    double dt = 0.1;  // Interval waktu (sesuaikan dengan loop program)
+    integral_ += error * dt;
+    double derivative = (error - prev_error_) / dt;
+    prev_error_ = error;
+
+    double output = kp_ * error + ki_ * integral_ + kd_ * derivative;
+
+    // Batasi output agar tidak terlalu besar
+    output = std::max(-0.3, std::min(0.3, output));
+    return output;
+}
+
+void Intelligent::FollowHuman() {
     const int FRAME_CENTER = 0;
     const int SMALL_DEVIATION_THRESHOLD = 15;
     const int LARGE_DEVIATION_THRESHOLD = 100;
 
     int deviation = object_[kPerson].frame.x - FRAME_CENTER;
     double rotation_speed;
-
     double filtered_distance = GetFilteredDistance(object_[kPerson].distance);
 
     fprintf(stderr, "filter >> %g \n", filtered_distance);
 
-    if(!object_[kPerson].exist){
+    if (!object_[kPerson].exist) {
         target_fb = 0.0;
-    }else{
+    } else {
+        double error = filtered_distance - target_distance_;  // Balik tanda error
+        target_fb = PIDControl(error);  // Atur dengan PID
+
+        // Jika target_fb terbalik, coba balik tanda:
+        // target_fb = -target_fb;
+
         deviation = object_[kPerson].frame.x;
-        if (abs(deviation) > LARGE_DEVIATION_THRESHOLD)
-        {
+        if (abs(deviation) > LARGE_DEVIATION_THRESHOLD) {
             target_fb = 0.0;
-            rotation_speed = 0.3;
+            rotation_speed = 0.6;
             target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
-        }
-        else if (abs(deviation) > SMALL_DEVIATION_THRESHOLD)
-        {
-            target_fb = 0.1;
-            rotation_speed = 0.1 + (abs(deviation) - SMALL_DEVIATION_THRESHOLD) * 0.002;
+        } else if (abs(deviation) > SMALL_DEVIATION_THRESHOLD) {
+            rotation_speed = 0.3 + (abs(deviation) - SMALL_DEVIATION_THRESHOLD) * 0.002;
             target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
-        }
-        else
-        {
-            target_fb = 0.2;
+        } else {
             rotation_speed = abs(deviation) * 0.003;
             target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
         }
-    
-        if (filtered_distance < 1.2)
-        {
-            if (abs(deviation) > SMALL_DEVIATION_THRESHOLD)
-            {
-                rotation_speed = 0.1 + (abs(deviation) - SMALL_DEVIATION_THRESHOLD) * 0.002;
-                target_rl = (deviation > 0) ? -rotation_speed : rotation_speed;
-            }
-            target_fb = 0.0;
-            
-        }
     }
-    
-    
 }
-
 
 void Intelligent::AutomaticSearchCup()
 {
@@ -261,11 +264,12 @@ void Intelligent::ApplyAcceleration()
 {
     double accel_fb = 0.02;
     double accel_rl = 0.02;
+    double decel_fb = 0.04;  // Tambahkan deselerasi agar berhenti lebih cepat
 
     if (move_fb < target_fb)
         move_fb = std::min(move_fb + accel_fb, target_fb);
     else if (move_fb > target_fb)
-        move_fb = std::max(move_fb - accel_fb, target_fb);
+        move_fb = std::max(move_fb - decel_fb, target_fb); // Gunakan deselerasi
 
     if (move_rl < target_rl)
         move_rl = std::min(move_rl + accel_rl, target_rl);

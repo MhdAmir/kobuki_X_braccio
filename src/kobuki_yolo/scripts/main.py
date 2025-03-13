@@ -38,7 +38,7 @@ def image_callback(color_msg, depth_msg):
 
             if 0 <= x < w and 0 <= y < h:
                 z = depth_image[y, x] / 1000.0  # Konversi depth dari mm ke meter
-                rospy.loginfo(f"Landmark {landmark_id}: (X: {x}, Y: {y}, Z: {z:.3f} m)")
+                # rospy.loginfo(f"Landmark {landmark_id}: (X: {x}, Y: {y}, Z: {z:.3f} m)")
 
                 cv2.putText(cv_image, f"{landmark_id}: {z:.2f}m", (x, y), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -55,7 +55,7 @@ def main():
     ts = message_filters.ApproximateTimeSynchronizer([image_sub, depth_sub], queue_size=10, slop=0.1)
     ts.registerCallback(image_callback)
     
-    rospy.loginfo("MediaPipe Pose Tracking with Depth Node Started")
+    # rospy.loginfo("MediaPipe Pose Tracking with Depth Node Started")
     rospy.spin()
 
 if __name__ == "__main__":

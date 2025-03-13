@@ -23,6 +23,8 @@ public:
     void DrawFrame();
     std::vector<DetectedObject> PubDetectedObject();
 
+    void EnableYOLO(bool enable);
+
 private:
     RealSenseCamera& camera_;
     YOLO& yolo_;

@@ -3,6 +3,8 @@
     <remap from="keyop/cmd_vel" to="mobile_base/commands/velocity"/>
 
     <include file="$(find kobuki_node)/launch/minimal.launch" />
+    <include file="$(find kobuki_node)/launch/test_get_odom.launch" />
+    <include file="$(find kobuki_communication)/launch/communication.launch" />
     <!-- <include file="$(find kobuki_hand)/launch/hand_track.launch" /> -->
     <include file="$(find kobuki_yolo)/launch/human.launch" />
     <!-- <include file="$(find kobuki_yolo)/launch/object.launch" /> -->

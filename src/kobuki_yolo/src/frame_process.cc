@@ -3,10 +3,12 @@
 FrameProcessor::FrameProcessor(RealSenseCamera& camera, YOLO& yolo, ModelConfig& model_config) : camera_(camera), yolo_(yolo), model_config_(model_config) {    
     use_gui_ = true;
     running_ = true;
+    EnableYOLO(true);
     config_object_name_ = model_config_.GetObjectName();
 }
 FrameProcessor::~FrameProcessor() {
     running_ = false;
+    yolo_.Stop();    
     camera_.Stop();
     if(use_gui_)
         cv::destroyAllWindows();
@@ -18,6 +20,10 @@ FrameProcessor::~FrameProcessor() {
     }
 
     fprintf(stderr, "[realsense] successfully stopped. See ya!\n");
+}
+
+void FrameProcessor::EnableYOLO(bool enable) {
+    yolo_.EnableYOLO(enable); 
 }
 
 void FrameProcessor::Start() {
@@ -37,13 +43,14 @@ void FrameProcessor::DrawFrame() {
         color_frame_ = camera_.GetColorFrame();
         depth_frame_ = camera_.GetDepthFrame();
 
+        if (color_frame_.empty() || depth_frame_.empty()) {
+            continue;
+        }
+        
         detected_object_ = yolo_.GetDetectedObject();
         EstimateDepth(detected_object_);
         EstimateRealXYZ(detected_object_);
 
-        if (color_frame_.empty() || depth_frame_.empty()) {
-            continue;
-        }
         if(use_gui_){
             for(auto& object : detected_object_){
                 cv::rectangle(color_frame_, object.rectangle_, cv::Scalar(0, 255, 0), 2);

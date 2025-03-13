@@ -3,6 +3,7 @@
   <group ns="camera2">
     <include file="$(find realsense2_camera)/launch/rs_camera.launch">
       <arg name="serial_no" value="934222072624"/>
+      <arg name="initial_reset" value="true"/>
       <arg name="align_depth" value="true"/>
       <arg name="color_width" value="424"/>
       <arg name="color_height" value="240"/>
