@@ -51,15 +51,37 @@ void Inference::InitialModel(const std::string &model_path, const int &int8_size
 }
 
 std::vector<Detection> Inference::RunInference(const cv::Mat &frame) {
-    Preprocessing(frame);
-    inference_request_.infer();
-    PostProcessing();
+    // fprintf(stderr, "runInf\n");
+    
+    detections_.clear();
+    if(frame.empty())
+        return detections_;
+
+        try {
+            Preprocessing(frame);
+    
+            // fprintf(stderr, "infer\n");
+            inference_request_.infer();
+            // fprintf(stderr, "infer success\n");
+    
+            PostProcessing();
+        } catch (const std::exception& e) {
+            std::cerr << "Error during inference: " << e.what() << std::endl;
+    
+        } catch (...) {
+            std::cerr << "Unknown error occurred during inference!" << std::endl;
+    
+        }
+
+    // fprintf(stderr, "success runInf\n");
 
     return detections_;
 }
 
 void Inference::Preprocessing(const cv::Mat &frame) {
     // Use a fixed size output to avoid memory reallocations
+    // fprintf(stderr, "preprocess\n");
+
     cv::resize(frame, resized_frame_, model_input_shape_, 0, 0, cv::INTER_AREA);
 
     factor_.x = static_cast<float>(frame.cols / model_input_shape_.width);
@@ -68,9 +90,13 @@ void Inference::Preprocessing(const cv::Mat &frame) {
     float *input_data = (float *)resized_frame_.data;
     input_tensor_ = ov::Tensor(compiled_model_.input().get_element_type(), compiled_model_.input().get_shape(), input_data);
     inference_request_.set_input_tensor(input_tensor_);
+
+    // fprintf(stderr, "success preprocess\n");
+
 }
 
 void Inference::PostProcessing() {
+    // fprintf(stderr, "postprocess\n");
     std::vector<int> class_list;
     std::vector<float> confidence_list;
     std::vector<cv::Rect> box_list;
@@ -149,34 +175,7 @@ void Inference::PostProcessing() {
         }
     }
     
-    // Process class 41
-    std::vector<int> indices_class41;
-    std::vector<cv::Rect> boxes_class41;
-    std::vector<float> scores_class41;
-    
-    for (int i = 0; i < class_list.size(); i++) {
-        if (class_list[i] == 41) {
-            indices_class41.push_back(i);
-            boxes_class41.push_back(box_list[i]);
-            scores_class41.push_back(confidence_list[i]);
-        }
-    }
-    
-    std::vector<int> NMS_result41;
-    if (!boxes_class41.empty()) {
-        cv::dnn::NMSBoxes(boxes_class41, scores_class41, model_score_threshold_[41], model_NMS_threshold_[41], NMS_result41);
-        
-        for (int idx : NMS_result41) {
-            Detection result;
-            int original_idx = indices_class41[idx];
-            
-            result.class_id = 41;
-            result.confidence = confidence_list[original_idx];
-            result.box = GetBoundingBox(box_list[original_idx]);
-            
-            detections_.push_back(result);
-        }
-    }
+    // fprintf(stderr, "postprocess success\n");
 }
 
 cv::Rect Inference::GetBoundingBox(const cv::Rect &src) {

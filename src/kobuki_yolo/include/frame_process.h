@@ -20,8 +20,8 @@ public:
     ~FrameProcessor();
 
     void Start();
-    void DrawFrame();
-    std::vector<DetectedObject> PubDetectedObject();
+    std::vector<DetectedObject> DrawFrame();
+    // std::vector<DetectedObject> PubDetectedObject();
 
     void EnableYOLO(bool enable);
 
@@ -32,7 +32,7 @@ private:
     ModelConfig& model_config_;
 
     std::vector<std::string> config_object_name_;
-    std::vector<DetectedObject> detected_object_;
+    // std::vector<DetectedObject> detected_object_;
 
 
     void EstimateDepth(std::vector<DetectedObject> &detected_object);

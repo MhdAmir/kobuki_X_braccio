@@ -120,17 +120,24 @@ void RealSenseCamera::Stop()
 
 void RealSenseCamera::colorCallback(const sensor_msgs::ImageConstPtr& msg)
 {
+//   fprintf(stderr, "color \n");
+
     std::lock_guard<std::mutex> lock(mutex_color_frame_);
     try
     {
         cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
         color_mat_ = cv_ptr->image;
         last_color_timestamp_ = ros::Time::now();
+
+        // fprintf(stderr, "color success\n");
+
     }
     catch (cv_bridge::Exception& e)
     {
         std::cerr << "Color frame conversion error: " << e.what() << std::endl;
     }
+
+    
 }
 
 void RealSenseCamera::depthCallback(const sensor_msgs::ImageConstPtr& msg)
@@ -140,6 +147,8 @@ void RealSenseCamera::depthCallback(const sensor_msgs::ImageConstPtr& msg)
         cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_16UC1);
         
         {
+            // fprintf(stderr, "depth\n");
+            
             std::lock_guard<std::mutex> lock(mutex_depth_frame_);
             // Convert the depth image to color map for visualization
             cv::Mat depth_colormap;
@@ -148,6 +157,9 @@ void RealSenseCamera::depthCallback(const sensor_msgs::ImageConstPtr& msg)
             
             // Store raw depth data for depth measurements
             raw_depth_mat_ = cv_ptr->image;
+
+            // fprintf(stderr, "depth success\n");
+
         }
         
         last_depth_timestamp_ = ros::Time::now();
@@ -204,6 +216,8 @@ float RealSenseCamera::GetDepthValue(cv::Point mid_point)
 
 float RealSenseCamera::GetDepthValue(cv::Rect area)
 {
+    // fprintf(stderr, "distance\n");
+
     float distance = 0.0f;
     try
     {
@@ -240,11 +254,16 @@ float RealSenseCamera::GetDepthValue(cv::Rect area)
         {
             distance = sum / static_cast<float>(count);
         }
+
+        
     }
     catch (const std::exception &e)
     {
         std::cerr << "Error getting depth value: " << e.what() << '\n';
     }
+
+    // fprintf(stderr, "distance success\n");
+
     return distance;
 }
 
@@ -253,6 +272,7 @@ float RealSenseCamera::GetDepthValue(cv::Point mid_point, int window_size)
     float distance = 0.0f;
     int valid_points = 0;
     std::vector<float> valid_depths;
+    // fprintf(stderr, "distance\n");
     
     try
     {
@@ -320,6 +340,8 @@ float RealSenseCamera::GetDepthValue(cv::Point mid_point, int window_size)
         std::cerr << "Error getting depth value: " << e.what() << '\n';
     }
     
+    // fprintf(stderr, "distance success\n");
+
     return distance;
 }
 
@@ -328,6 +350,7 @@ rs2_vector RealSenseCamera::GetXYZDepthValues(cv::Point mid_point, int window_si
     rs2_vector xyz_values = {0.0f, 0.0f, 0.0f}; // x, depth (y), z
     int valid_points = 0;
     std::vector<rs2_vector> valid_points_xyz;
+    // fprintf(stderr, "xyz\n");
     
     try
     {
@@ -407,6 +430,8 @@ rs2_vector RealSenseCamera::GetXYZDepthValues(cv::Point mid_point, int window_si
         std::cerr << "Error getting XYZ values: " << e.what() << '\n';
     }
     
+    // fprintf(stderr, "xyz success\n");
+
     return xyz_values;
 }
 

@@ -95,6 +95,8 @@ bool YOLO::SortByConfidence(const Detection &right, const Detection &left)
 
 std::vector<DetectedObject> YOLO::Predict(const cv::Mat &frame)
 {
+  // fprintf(stderr, "predict\n");
+
   const float kConfidenceThreshold = 0.05;
 
   std::vector<Detection> detection = inference_->RunInference(frame);
@@ -115,6 +117,9 @@ std::vector<DetectedObject> YOLO::Predict(const cv::Mat &frame)
 
     detected_object.push_back(detected);
   }
+
+  // fprintf(stderr, "success predict\n");
+
 
   return detected_object;
 }
