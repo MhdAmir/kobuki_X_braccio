@@ -10,7 +10,7 @@
 #include "kobuki_msgs/MotorPower.h"
 #include "kobuki_msgs/BumperEvent.h"
 #include "kobuki_intelligent/object.h"
-#include <std_msgs/UInt8MultiArray.h>
+#include <std_msgs/Int16MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <chrono>
 #include <deque>
@@ -21,6 +21,11 @@
 
 #define kHalfFrameWidth 212
 #define kHalfFrameHeight 120
+
+#define L0 71.5
+#define L1 125
+#define L2 125
+#define L3 192
 
 class Intelligent {
 private:
@@ -41,7 +46,7 @@ private:
     ros::Subscriber sub_odometry_;
     ros::Subscriber sub_bump_;
     ros::Subscriber sub_arm_;
-    ros::Subscriber sub_cliff;
+    ros::Subscriber sub_cliff_;
     
     ros::Publisher pub_communication_;
     ros::Publisher pub_arm_;
@@ -78,6 +83,9 @@ private:
 
     double PIDControl(double error);
 
+    std::vector<int> computeAngles(double x, double y, double z);
+
+
     int mode_communication_ = 0; //0: home&disconnect, 1: follow human, 2: manual, 3: take cup, 4: direction by hand
     int manual_comm_ = 0; // 0: stop, 1: forward, 2: backward, 3: right, 4: left
     
@@ -89,8 +97,11 @@ private:
     const int HISTORY_SIZE = 15;
     std::vector<double> distance_history_;
 
-    std::vector<uint8_t> angles_ = {90, 90, 90, 90, 90, 73};
-    std::vector<uint8_t> last_angles_ = {90, 90, 90, 90, 90, 73};
+    std::vector<int> target_angles_ = {};
+
+
+    std::vector<int16_t> angles_ = {90, 90, 90, 90, 90, 73};
+    std::vector<int16_t> last_angles_ = {90, 90, 90, 90, 90, 73};
     
 public:
     Intelligent();

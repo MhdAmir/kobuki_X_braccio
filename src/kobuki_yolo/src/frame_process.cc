@@ -56,7 +56,7 @@ std::vector<DetectedObject> FrameProcessor::DrawFrame()
             // fprintf(stderr, "Error: Empty frame received!\n");
             continue;
         }
-
+        
         // fprintf(stderr, "ambil object\n");
         std::vector<DetectedObject> detected_object = yolo_.GetDetectedObject();
         // fprintf(stderr, "jarak\n");
@@ -85,7 +85,6 @@ std::vector<DetectedObject> FrameProcessor::DrawFrame()
 
         }
 
-        detected_object.clear();
 
         // fprintf(stderr, "success draw\n");
 

@@ -23,10 +23,12 @@ void ROSPublish::PublishMessage()
 
     custom_msgs::Realsense realsense_message;
 
-    if (!detected_object.empty()) {
-        const DetectedObject &detection = detected_object[0];
-
+   if (!detected_object.empty()) {
+    for (const auto& detection : detected_object) {
         if (detection.class_id_ >= 0 && detection.class_id_ < name_object.size()) {
+            if (detection.class_id_ != 0 && detection.class_id_ != 41 ) 
+                continue;
+
             custom_msgs::Object object;
             object.x = detection.centroid_.x;
             object.y = detection.centroid_.y;
@@ -37,18 +39,20 @@ void ROSPublish::PublishMessage()
             object.name = name_object[detection.class_id_];
 
             realsense_message.yolo.push_back(object);
+            
         } else {
             ROS_WARN("Invalid class_id_: %d, skipping object.", detection.class_id_);
         }
-    } else {
-
-        custom_msgs::Object object;
-        object.x = 0;
-        object.y = 0;
-        object.distance = 0;
-        object.name = "none";
-        realsense_message.yolo.push_back(object);
     }
+} else {
+    // Jika tidak ada objek yang terdeteksi, tambahkan objek default
+    custom_msgs::Object object;
+    object.x = 0;
+    object.y = 0;
+    object.distance = 0;
+    object.name = "none";
+    realsense_message.yolo.push_back(object);
+}
 
     
     realsense_pub_.publish(realsense_message);

@@ -104,7 +104,7 @@ void Inference::PostProcessing() {
     float *detections = inference_request_.get_output_tensor().data<float>();
     const cv::Mat detection_outputs(model_output_shape_, CV_32F, (float *)detections);
 
-    if(detection_outputs.rows - 4 != model_score_threshold_.size()) {
+    if (detection_outputs.rows - 4 != model_score_threshold_.size()) {
         std::cerr << "Amount of parameter model score threshold is not correct" << std::endl;
         std::cerr << "Check it on netron.app / metadata.yaml" << std::endl;
     }
@@ -175,9 +175,37 @@ void Inference::PostProcessing() {
         }
     }
     
+    // Process class 41
+    std::vector<int> indices_class41;
+    std::vector<cv::Rect> boxes_class41;
+    std::vector<float> scores_class41;
+    
+    for (int i = 0; i < class_list.size(); i++) {
+        if (class_list[i] == 41) {
+            indices_class41.push_back(i);
+            boxes_class41.push_back(box_list[i]);
+            scores_class41.push_back(confidence_list[i]);
+        }
+    }
+    
+    std::vector<int> NMS_result41;
+    if (!boxes_class41.empty()) {
+        cv::dnn::NMSBoxes(boxes_class41, scores_class41, model_score_threshold_[41], model_NMS_threshold_[41], NMS_result41);
+        
+        for (int idx : NMS_result41) {
+            Detection result;
+            int original_idx = indices_class41[idx];
+            
+            result.class_id = 41;
+            result.confidence = confidence_list[original_idx];
+            result.box = GetBoundingBox(box_list[original_idx]);
+            
+            detections_.push_back(result);
+        }
+    }
+    
     // fprintf(stderr, "postprocess success\n");
 }
-
 cv::Rect Inference::GetBoundingBox(const cv::Rect &src) {
     cv::Rect box = src;
 

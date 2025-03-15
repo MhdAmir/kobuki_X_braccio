@@ -25,6 +25,7 @@ add_executable(${PROJECT_NAME}
 	src/intelligent.cpp
 	src/running.cpp
 	src/main.cpp
+	src/utility.cpp
 )
 target_link_libraries(kobuki_intelligent ${catkin_LIBRARIES})
 

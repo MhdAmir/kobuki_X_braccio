@@ -1,0 +1,3 @@
+float32 azimuth
+float32 elevation
+uint8 detected_pose

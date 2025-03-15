@@ -2,29 +2,29 @@
 
 void Intelligent::Loop()
 {
-    switch (mode_communication_)
-    {
-    case 0:
-        // Init();
-        break;
+    // switch (mode_communication_)
+    // {
+    // case 0:
+    //     // Init();
+    //     break;
     
-    case 1:
-        AutomaticSearchCup();
-        break;
+    // case 1:
+    //     AutomaticSearchCup();
+    //     break;
 
-    case 2:
-        ManualComm();
-        break;
+    // case 2:
+    //     ManualComm();
+    //     break;
 
-    case 3:
-        FollowHuman();
-        break;
+    // case 3:
+    //     FollowHuman();
+    //     break;
     
-    case 4:
+    // case 4:
 
-        break;
-    }
-    // // AutomaticSearchCup();
+    //     break;
+    // }
+    AutomaticSearchCup();
     ApplyAcceleration();
     PublishMessage();
 }
@@ -33,7 +33,7 @@ void Intelligent::PublishMessage()
 {
     kobuki_msgs::MotorPower motor_msg;
     geometry_msgs::Twist twist_msg;
-    std_msgs::UInt8MultiArray angle_msg;
+    std_msgs::Int16MultiArray angle_msg;
 
     twist_msg.linear.x = move_fb;
     twist_msg.angular.z = move_rl;
@@ -88,7 +88,7 @@ void Intelligent::FollowHuman() {
     double rotation_speed;
     double filtered_distance = GetFilteredDistance(object_[kPerson].distance);
 
-    fprintf(stderr, "filter >> %g \n", filtered_distance);
+    // fprintf(stderr, "filter >> %g \n", filtered_distance);
 
     if (!object_[kPerson].exist) {
         target_fb = 0.0;
@@ -125,7 +125,7 @@ void Intelligent::AutomaticSearchCup()
 
     double filtered_distance = GetFilteredDistance(object_[kCup].distance);
 
-    fprintf(stderr, "filter >> %g \n", filtered_distance);
+    // fprintf(stderr, "filter >> %g \n", filtered_distance);
     
     if(state_ != 2 && state_ != 3 && state_ != 4 && state_ != 5 ){
         if(filtered_distance > 0.3){
@@ -136,8 +136,8 @@ void Intelligent::AutomaticSearchCup()
 
     }
 
-    // fprintf(stderr, "state >> %d\n", state_);
-    // fprintf(stderr, "arm move >> %d\n\n", arm_moving_);
+    fprintf(stderr, "state >> %d\n", state_);
+    fprintf(stderr, "arm move >> %d\n\n", arm_moving_);
     // fprintf(stderr, "frame x >> %d\n\n", object_[kCup].frame.x);
 
     switch (state_)
@@ -145,13 +145,17 @@ void Intelligent::AutomaticSearchCup()
     case 0:
         if (!object_[kCup].exist)
         {
-            angles_.assign({151, 83, 0, 0, 90, 90});
+            if(!arm_moving_)
+                angles_.assign({90, 90, 0, 0, 90, 90});
+
             target_fb = 0.0;
             target_rl = 0.3;
         }
         else
         {
-            angles_.assign({90, 120, 0, 0, 90, 90});
+            if(!arm_moving_)
+                angles_.assign({90, 120, 0, 0, 90, 90});
+
             deviation = object_[kCup].frame.x;
             if (abs(deviation) > LARGE_DEVIATION_THRESHOLD)
             {
@@ -188,7 +192,8 @@ void Intelligent::AutomaticSearchCup()
         }
         break;
     case 1:
-        angles_.assign({92, 73, 0, 88, 90, 0});
+        if(!arm_moving_)
+            angles_.assign({92, 73, 0, 88, 90, 0});
 
         deviation = object_[kCup].frame.x;
 
@@ -219,7 +224,9 @@ void Intelligent::AutomaticSearchCup()
         break;
         
     case 2:     
-        angles_.assign({90, 0, 0, 145, 93, 0});
+        if(!arm_moving_)
+            angles_.assign({90, 0, 0, 145, 93, 0});
+
         if(!arm_moving_){
             state_ = 3;
             target_fb = 0;
@@ -229,7 +236,9 @@ void Intelligent::AutomaticSearchCup()
         break;
 
     case 3:
-        angles_.assign({90, 0, 0, 145, 93, 180});
+        if(!arm_moving_)
+            angles_.assign({90, 0, 0, 145, 93, 180});
+
         if(!arm_moving_){
             state_ = 4;
             target_fb = 0;
@@ -239,7 +248,9 @@ void Intelligent::AutomaticSearchCup()
         break;
         
     case 4:
-        angles_.assign({90, 90, 180, 145, 93, 180});
+        if(!arm_moving_)
+            angles_.assign({90, 90, 180, 145, 93, 180});
+
         if(!arm_moving_){
             state_ = 5;
             target_fb = 0;
@@ -249,7 +260,9 @@ void Intelligent::AutomaticSearchCup()
         break;
 
     case 5:
-        angles_.assign({90, 90, 180, 145, 93, 0});
+        if(!arm_moving_)
+            angles_.assign({90, 90, 180, 145, 93, 0});
+            
         if(!arm_moving_){
             state_ = 0;
             target_fb = 0;

@@ -13,6 +13,7 @@ add_message_files(
   Comm.msg
   Object.msg
   Realsense.msg
+  HumanPose.msg
 )
 
 # add_service_files(
